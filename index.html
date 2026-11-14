@@ -112,7 +112,7 @@ html,body{margin:0;height:100%;background:#2a2a2e;overflow:hidden;color:#fff;fon
     goFull: 'FULL RIDE', goShort: 'SHORT RIDE',
     pauseT: 'PAUSED', pauseP: 'Catch your breath. Leipzig will wait.', pauseGo: 'KEEP RIDING',
     hooray: 'Hooray, you made it!',
-    share: 'SHARE', shareText: 'I caught {n} leaves on a bike ride across Leipzig.', shareSub: 'A small game by Smadar Shilo-Marcus', save: 'SAVE IMAGE', send: 'SEND', copy: 'COPY TEXT', copied: 'COPIED', close: 'BACK',
+    share: 'SHARE', shareText: 'I caught {n} leaves on a bike ride across Leipzig.', shareMsg: "I caught {n} leaves riding across the city! 🍂\nWanna try? it's Just a bike ride 🚲\nhttps://leipzig-game.smadar.uk", shareSub: 'A small game by Smadar Shilo-Marcus', save: 'SAVE IMAGE', send: 'SEND', copy: 'COPY TEXT', copied: 'COPIED', close: 'BACK',
     go: 'RIDE',
     endTitle: 'THAT WAS "JUST A BIKE RIDE", LEIPZIG',
     endFull: '', endCrash: 'Three bumps. You got as far as {place}.',
@@ -1372,7 +1372,7 @@ html,body{margin:0;height:100%;background:#2a2a2e;overflow:hidden;color:#fff;fon
     return c;
   }
   let shareBlob = null;
-  const shareMsg = () => TEXT.shareText.replace('{n}', show.score) + ' ' + TEXT.about.url;
+  const shareMsg = () => TEXT.shareMsg.replace('{n}', show.score);
   $('enShare').onclick = () => { const c = shareCard(), url = c.toDataURL('image/jpeg', 0.9); $('shImg').src = url; $('shSave').href = url; shareBlob = null;
     c.toBlob(b => { shareBlob = b; const f = b && window.File ? new File([b], 'just-a-bike-ride.jpg', { type: 'image/jpeg' }) : null; $('shSend').style.display = f && navigator.canShare && navigator.canShare({ files: [f] }) ? '' : 'none'; }, 'image/jpeg', 0.9);
     $('shSend').style.display = 'none'; $('shCopy').textContent = TEXT.copy; $('share').classList.add('on'); };
