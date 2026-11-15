@@ -91,7 +91,7 @@ html,body{margin:0;height:100%;background:#2a2a2e;overflow:hidden;color:#fff;fon
 <div class="sheet on" id="intro"><div class="box"><h1 id="inT"></h1><div id="inP"></div><div class="row"><button class="go" id="inGo"></button><button class="go alt" id="inShort" style="display:none"></button></div></div></div>
 <div class="sheet soft" id="paused"><div class="box"><h1 id="paT"></h1><p id="paP"></p><button class="go" id="paGo"></button></div></div>
 <div class="sheet" id="end"><div class="box"><p class="hooray" id="enH"></p><h1 id="enT"></h1><p id="enW"></p><p class="big" id="enS"></p><p id="enB"></p><div class="row"><button class="go" id="enGo"></button><button class="go alt" id="enShare"></button></div><hr><div class="who" id="abW"></div><div class="name" id="abN"></div><div id="abBio"></div><p class="ask" id="abAsk"></p><div class="row"><a class="pill" id="abCoffee" target="_blank" rel="noopener"></a><a class="pill" id="abHire" target="_blank" rel="noopener"></a></div></div></div>
-<div class="sheet" id="share"><div class="box"><img id="shImg" alt=""><div class="row"><a class="pill" id="shSave" download="just-a-bike-ride.jpg"></a><button class="pill" id="shSend"></button><button class="pill" id="shCopy"></button></div><div class="row"><button class="go alt" id="shClose"></button></div></div></div>
+<div class="sheet" id="share"><div class="box"><img id="shImg" alt=""><div class="row"><a class="pill" id="shSave" download="just-a-bike-ride.jpg"></a><button class="pill" id="shSend"></button></div><div class="row"><button class="go alt" id="shClose"></button></div></div></div>
 <div id="err">This ride needs WebGL and an internet connection.</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -105,14 +105,13 @@ html,body{margin:0;height:100%;background:#2a2a2e;overflow:hidden;color:#fff;fon
   /* ============================================================ the words. Everything written on screen is here. */
   const TEXT = {
     title: 'JUST A BIKE RIDE',
-    intro: [['steer', 'Steer with the arrow keys, the mouse, or a finger.'],
-      ['bell', 'Space, a click or a tap rings your bell. Try it everywhere: every place has a surprise.'],
-      ['leaf', 'Catch the leaves. A golden one is worth five.'],
-      ['heart', 'Dodge whatever is in your way: each bump costs a heart. You have three, and the ice cream cart gives one back.']],
+    intro: [['leaf', 'Catch the leaves. A golden one is worth five.'],
+      ['steer', 'Steer with the arrow keys, the mouse, or a finger.'],
+      ['bell', 'Space, a click or a tap rings your bell. Try it everywhere: every place has a surprise.']],
     goFull: 'FULL RIDE', goShort: 'SHORT RIDE',
     pauseT: 'PAUSED', pauseP: 'Catch your breath. Leipzig will wait.', pauseGo: 'KEEP RIDING',
     hooray: 'Hooray, you made it!',
-    share: 'SHARE', shareText: 'I caught {n} leaves on a bike ride across Leipzig.', shareMsg: "I caught {n} leaves riding across the city! 🍂\nWanna try? it's Just a bike ride 🚲\nhttps://leipzig-game.smadar.uk", shareSub: 'A small game by Smadar Shilo-Marcus', save: 'SAVE IMAGE', send: 'SEND', copy: 'COPY TEXT', copied: 'COPIED', close: 'BACK',
+    share: 'SHARE', shareText: 'I caught {n} leaves on a bike ride across Leipzig.', shareMsg: "I caught {n} leaves riding across the city! 🍂\nWanna try? it's Just a bike ride 🚲\nhttps://leipzig-game.smadar.uk", shareSub: 'A small game by Smadar Shilo-Marcus', save: 'SAVE IMAGE', send: 'SHARE ON WHATSAPP', close: 'BACK',
     go: 'RIDE',
     endTitle: 'THAT WAS "JUST A BIKE RIDE", LEIPZIG',
     endFull: '', endCrash: 'Three bumps. You got as far as {place}.',
@@ -1356,7 +1355,7 @@ html,body{margin:0;height:100%;background:#2a2a2e;overflow:hidden;color:#fff;fon
     if (parts.length > 1) { const a = document.createElement('a'); a.href = TEXT.about.url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = TEXT.about.studio; p.append(a, parts[1]); }   // the studio's name is the link to the site
     $('abBio').appendChild(p); });
   $('abAsk').textContent = TEXT.about.ask; $('abCoffee').textContent = TEXT.about.coffee; $('abCoffee').href = TEXT.about.coffeeUrl; $('abHire').textContent = TEXT.about.hire; $('abHire').href = TEXT.about.hireUrl;
-  $('enShare').textContent = TEXT.share; $('shSave').textContent = TEXT.save; $('shSend').textContent = TEXT.send; $('shCopy').textContent = TEXT.copy; $('shClose').textContent = TEXT.close;
+  $('enShare').textContent = TEXT.share; $('shSave').textContent = TEXT.save; $('shSend').textContent = TEXT.send; $('shClose').textContent = TEXT.close;
   // the share screen: a square picture of where the ride ended, with the score on it
   function shareCard() {
     render(); const c = document.createElement('canvas'), S = 1080, g = c.getContext('2d'), sw = canvas.width, sh = canvas.height, m = Math.min(sw, sh); c.width = c.height = S;
@@ -1371,13 +1370,10 @@ html,body{margin:0;height:100%;background:#2a2a2e;overflow:hidden;color:#fff;fon
     g.fillStyle = 'rgba(255,255,255,.8)'; g.font = F(400, 28); g.fillText(TEXT.shareSub + '  ·  ' + TEXT.about.urlText, S / 2, 1010);
     return c;
   }
-  let shareBlob = null;
   const shareMsg = () => TEXT.shareMsg.replace('{n}', show.score);
-  $('enShare').onclick = () => { const c = shareCard(), url = c.toDataURL('image/jpeg', 0.9); $('shImg').src = url; $('shSave').href = url; shareBlob = null;
-    c.toBlob(b => { shareBlob = b; const f = b && window.File ? new File([b], 'just-a-bike-ride.jpg', { type: 'image/jpeg' }) : null; $('shSend').style.display = f && navigator.canShare && navigator.canShare({ files: [f] }) ? '' : 'none'; }, 'image/jpeg', 0.9);
-    $('shSend').style.display = 'none'; $('shCopy').textContent = TEXT.copy; $('share').classList.add('on'); };
-  $('shSend').onclick = () => { if (!shareBlob) return; const f = new File([shareBlob], 'just-a-bike-ride.jpg', { type: 'image/jpeg' }); navigator.share({ files: [f], text: shareMsg() }).catch(() => {}); };
-  $('shCopy').onclick = () => { const done = () => { $('shCopy').textContent = TEXT.copied; }; if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(shareMsg()).then(done, () => {}); };
+  $('enShare').onclick = () => { const c = shareCard(), url = c.toDataURL('image/jpeg', 0.9); $('shImg').src = url; $('shSave').href = url;
+    $('share').classList.add('on'); };
+  $('shSend').onclick = () => window.open('https://wa.me/?text=' + encodeURIComponent(shareMsg()), '_blank');   // WhatsApp: the app on a phone, WhatsApp Web on a computer
   $('shClose').onclick = () => $('share').classList.remove('on');
   // pause: everything stops where it is, sound too, until you ride on
   let paused = false;
